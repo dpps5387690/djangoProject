@@ -1,13 +1,15 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
 {% load static %}
-
-{% block title %}
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <title>Test</title>
-{% endblock %}
-{% block content %}
+</head>
+
+<body>
 <table border="1px" width="100%" style="border-collapse: collapse;">
     <!-- <a href="../sims/add">新增學生</a> -->
+ {% block content %}
     <tr>
     {% for COLUMN in COLUMNS %}
         <th>{{ COLUMN}}</th>
@@ -40,5 +42,7 @@
             </td>-->
         </tr>
     {% endfor %}
+ {% endblock %}
 </table>
-{% endblock %}
+</body>
+</html>

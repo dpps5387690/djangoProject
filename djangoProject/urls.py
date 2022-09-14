@@ -22,5 +22,5 @@ urlpatterns = [
     # path('admin/', admin.site.urls),
     # path('index_Test/', views.index_Test),
     url(r'^admin/', admin.site.urls),
-    url(r'^index_Test/', views.index_Test),
+    url(r'^$', views.index_Test),
 ]

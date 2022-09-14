@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+</head>
+
+<body>
+<table border="1px" width="100%" style="border-collapse: collapse;">
+    <!-- <a href="../sims/add">新增學生</a> -->
+ {% block content %}
+    <tr>
+    {% for COLUMN in COLUMNS %}
+        <th>{{ COLUMN}}</th>
+    {% endfor %}
+    </tr>
+
+    {% for row in data %}
+        <tr>
+        {% for value in row %}
+            <td align="center">
+            {% if forloop.counter == 2 %}
+             <a class="stored-uploadTest {{ file.type }}" href="uploadTest?filename={{ value }}&type=desktop&mode=view"">
+                {{ value }}
+             </a>
+             {% else %}
+                {{ value }}
+            {% endif %}
+            </td>
+        {% endfor %}
+            <!-- <td align="center">{{ forloop.counter }} </td>
+            <td align="center">{{ row.ExcelName }} </td>
+            <td align="center">{{ row.3 }} </td>
+            <td align="center">
+                <a href="../sims/edit/?id={{ student.id }}">
+                    編輯
+                </a>
+                <a href="../sims/delete/?id={{ student.id }}">
+                    刪除
+                </a>
+            </td>-->
+        </tr>
+    {% endfor %}
+ {% endblock %}
+</table>
+</body>
+</html>

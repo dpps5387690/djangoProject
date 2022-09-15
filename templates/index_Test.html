@@ -11,7 +11,6 @@
 
     {% block content %}
         <select class="form-control" name="DBName" id="databasename" required="required">
-            <option value="none" selected disabled hidden>select database name</option>
             {% for c in alldatabase %}
                 <option>{{ c }}</option>
             {% endfor %}
@@ -70,7 +69,7 @@
                     {#alert(123456);#}
                     $.each(data, function (i, item) {
                         // 调用接口后返回list数据[u'account_role', u'account_user'],循环遍历该list拼接选项的内容
-                        content += '<option value=' + item + '>' + item + '</option>'
+                        content += '<option>' + item + '</option>'
                     });
                     // 将拼接好的内容作为id=db_table这个select元素的内容
                     $('#datatablename').html(content)
@@ -78,7 +77,9 @@
             })
             $("#datatablename").change();
         })
-
+        $(document).ready(function(){
+            $("#datatablename").change();
+        })
         $("#datatablename").change(function () {
             var options = $("#databasename option:selected"); //获取选中的项
             var db_Name = options.val(); //获取选中的值
@@ -86,6 +87,9 @@
             var db_Table = options.val(); //获取选中的值
             {#alert("ok");#}
             alert(db_Name + " " + db_Table);
+
+            {#var val = this.value;#}
+            {#alert(val)#}
 
             // 选择id=db_link的元素时触发该ajax请求，调用/comparison/get_table接口
             $.ajax({

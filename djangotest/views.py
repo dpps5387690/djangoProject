@@ -49,11 +49,11 @@ def index_Test(request):
         table_list = [list(dict(i).values())[0] for i in data]
         conn.close()
 
-    # output, COLUMNS = getdata(nowdatabasename, table_list[0])
-    # return render(request, 'index_Test.html',
-    #               {'data': output, 'COLUMNS': COLUMNS, 'alldatabase': alldatabase, 'alldatatable': table_list})
+    output, COLUMNS = getdata(nowdatabasename, table_list[0])
     return render(request, 'index_Test.html',
-                  {'alldatabase': alldatabase})
+                  {'data': output, 'COLUMNS': COLUMNS, 'alldatabase': alldatabase, 'alldatatable': table_list})
+    # return render(request, 'index_Test.html',
+    #               {'alldatabase': alldatabase, 'alldatatable': table_list})
 
 def get_table(request):
     """

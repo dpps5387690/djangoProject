@@ -5,6 +5,9 @@ from django.shortcuts import render
 
 mysqlhost = "gigabytenandteam.ddns.net"
 mysqlport = 33307
+mysqluser = "hywu"
+mysqlpw = "kOsJX0GfsqIzeukj"
+
 
 # Create your views here.
 def hello_view(request):
@@ -13,27 +16,44 @@ def hello_view(request):
     })
 
 
-# Create your views here.
 # 資料讀取
-def index_Test(request):
-
-    conn = pymysql.connect(host=mysqlhost, port=mysqlport, user="hywu", passwd="kOsJX0GfsqIzeukj",
-                           db="sorting_20220421", charset='utf8', cursorclass=pymysql.cursors.DictCursor)
+def getdata(DBName, TableName):
+    conn = pymysql.connect(host=mysqlhost, port=mysqlport, user=mysqluser, passwd=mysqlpw,
+                           db=DBName, charset='utf8', cursorclass=pymysql.cursors.DictCursor)
     with conn.cursor() as cursor:
-        cursor.execute("SELECT * FROM sortingreport_000")
+        # cursor.execute("SELECT * FROM sortingreport_000")
+        cursor.execute("SELECT * FROM %s" % TableName)
         data = cursor.fetchall()
         COLUMNS = [i[0] for i in cursor.description]  # for all Columns name
         output = [list(dict(i).values()) for i in data]
         conn.close()
+        #COLUMNS.remove('PNPDeviceID')
+    return output, COLUMNS
 
-    conn = pymysql.connect(host=mysqlhost, port=mysqlport, user="hywu", passwd="kOsJX0GfsqIzeukj",
+
+def index_Test(request):
+    conn = pymysql.connect(host=mysqlhost, port=mysqlport, user=mysqluser, passwd=mysqlpw,
                            charset='utf8', cursorclass=pymysql.cursors.DictCursor)
     with conn.cursor() as cursor:
         print(cursor.execute("SHOW DATABASES LIKE '%sorting_%'"))
         data = cursor.fetchall()
-        alldatabase = [list(dict(i).values()) for i in data]
+        alldatabase = [list(dict(i).values())[0] for i in data]
         conn.close()
-    return render(request, 'index_Test.html', {'data': output, 'COLUMNS': COLUMNS, 'alldatabase': alldatabase})
+
+    nowdatabasename = alldatabase[0]
+    conn = pymysql.connect(host=mysqlhost, port=mysqlport, user=mysqluser, passwd=mysqlpw,
+                           db=nowdatabasename, charset='utf8', cursorclass=pymysql.cursors.DictCursor)
+    with conn.cursor() as cursor:
+        print(cursor.execute("SHOW TABLES"))
+        data = cursor.fetchall()
+        table_list = [list(dict(i).values())[0] for i in data]
+        conn.close()
+
+    # output, COLUMNS = getdata(nowdatabasename, table_list[0])
+    # return render(request, 'index_Test.html',
+    #               {'data': output, 'COLUMNS': COLUMNS, 'alldatabase': alldatabase, 'alldatatable': table_list})
+    return render(request, 'index_Test.html',
+                  {'alldatabase': alldatabase})
 
 def get_table(request):
     """
@@ -45,15 +65,23 @@ def get_table(request):
         db_link_id = request.GET.get('db_link_id')
         print('从前台获得的id为：%s' % db_link_id)
 
-        conn = pymysql.connect(host=mysqlhost, port=mysqlport, user="hywu", passwd="kOsJX0GfsqIzeukj",
-                           db=db_link_id, charset='utf8', cursorclass=pymysql.cursors.DictCursor)
+        conn = pymysql.connect(host=mysqlhost, port=mysqlport, user=mysqluser, passwd=mysqlpw,
+                               db=db_link_id, charset='utf8', cursorclass=pymysql.cursors.DictCursor)
         cursor = conn.cursor()
         # db_name = "select db_name from comparison_linkdbinfo where id='%s'" % db_link_id
         # print db_name
         # 查询该库中的所有表
-        #get_all_table_sql = "select table_name from information_schema.tables where table_schema= '%s'" % db_link_info_dict['db_name']
+        # get_all_table_sql = "select table_name from information_schema.tables where table_schema= '%s'" % db_link_info_dict['db_name']
         cursor.execute("SHOW TABLES")
         data = list(cursor.fetchall())
-        table_list = [list(dict(i).values()) for i in data]
-        print (table_list)
+        table_list = [list(dict(i).values())[0] for i in data]
+        print(table_list)
         return JsonResponse(table_list, safe=False)
+
+
+def get_table_data(request):
+    if request.method == "GET":
+        nowdatabasename = request.GET['db_Name']
+        table = request.GET['db_Table']
+        output, COLUMNS = getdata(nowdatabasename, table)
+        return JsonResponse(data={"COLUMNS": COLUMNS, "output": output}, safe=False)

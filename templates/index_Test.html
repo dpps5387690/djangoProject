@@ -7,9 +7,51 @@
 </head>
 
 <body>
+<form enctype="multipart/form-data" action="{% url 'index_Test' %}" method="post">
 <table border="1px" width="100%" style="border-collapse: collapse;">
     <!-- <a href="../sims/add">新增學生</a> -->
  {% block content %}
+    <select class="form-control"  name="DBName" id="databasename" required="required">
+        {% for c in alldatabase %}
+        <option>{{ c.0 }}</option>
+        {% endfor %}
+    </select>
+
+     <select class="form-control"  name="TBName" id="datatablename" required="required">
+        {% for c in alldatatable %}
+        <option>{{ c.0 }}</option>
+        {% endfor %}
+    </select>
+
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+    <script >
+        $("#databasename").change(function() {
+            var options=$("#databasename option:selected"); //获取选中的项
+            var db_link_id = options.val(); //获取选中的值
+            {#alert("ok");#}
+            {#aalert(db_link_id);#}
+
+            // 选择id=db_link的元素时触发该ajax请求，调用/comparison/get_table接口
+            $.ajax({
+                url: '/get_table/',
+                data: {"db_link_id": db_link_id},
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var content='';
+                    {#alert(123456);#}
+                    $.each(data, function(i, item){
+                        // 调用接口后返回list数据[u'account_role', u'account_user'],循环遍历该list拼接选项的内容
+                        content+='<option value='+item+'>'+item+'</option>'
+                    });
+                    // 将拼接好的内容作为id=db_table这个select元素的内容
+                    $('#datatablename').html(content)
+        },
+            })
+
+        })
+    </script>
+
     <tr>
     {% for COLUMN in COLUMNS %}
         <th>{{ COLUMN}}</th>
@@ -44,5 +86,6 @@
     {% endfor %}
  {% endblock %}
 </table>
+</form>>
 </body>
 </html>

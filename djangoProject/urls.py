@@ -22,5 +22,6 @@ urlpatterns = [
     # path('admin/', admin.site.urls),
     # path('index_Test/', views.index_Test),
     url(r'^admin/', admin.site.urls),
-    url(r'^$', views.index_Test),
+    url(r'^$', views.index_Test, name='index_Test'),
+    url(r'^get_table/$',views.get_table,name='get_table'),
 ]

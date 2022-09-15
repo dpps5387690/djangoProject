@@ -85,8 +85,9 @@
             var db_Name = options.val(); //获取选中的值
             options = $("#datatablename option:selected"); //获取选中的项
             var db_Table = options.val(); //获取选中的值
+            var hide_index = 0;
             {#alert("ok");#}
-            alert(db_Name + " " + db_Table);
+            {#alert(db_Name + " " + db_Table);#}
 
             {#var val = this.value;#}
             {#alert(val)#}
@@ -104,7 +105,11 @@
                     $.each(data['COLUMNS'], function (i, item) {
                         // 调用接口后返回list数据[u'account_role', u'account_user'],循环遍历该list拼接选项的内容
                         {#content += '<option value=' + item + '>' + item + '</option>'#}
+                        if (item == 'PNPDeviceID')
+                            hide_index = Number(i) + 1;
+
                         content += '<th id=' + item + '>' + item + '</th>'
+                        {#alert(i);#}
                         {#alert(COLUMNS);#}
                     });
                     content += '</tr>';
@@ -119,8 +124,8 @@
                     });
                     // 将拼接好的内容作为id=db_table这个select元素的内容
                     $('#TableShow').html(content)
-                    {#$('#PNPDeviceID').hide()#}
-                    $('#TableShow tr > *:nth-child(5)').hide();
+                    {#alert("hide_index " + hide_index);#}
+                    $('#TableShow tr > *:nth-child(' + hide_index + ')').hide();
                 },
             })
         })

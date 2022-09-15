@@ -3,8 +3,8 @@ import pymysql.cursors
 from django.http import JsonResponse
 from django.shortcuts import render
 
-mysqlhost = "gigabytenandteam.ddns.net"
-mysqlport = 33307
+mysqlhost = "192.168.50.5"  # "gigabytenandteam.ddns.net"
+mysqlport = 3307  # 33307
 mysqluser = "hywu"
 mysqlpw = "kOsJX0GfsqIzeukj"
 

@@ -136,14 +136,14 @@ def search_data_row(request):
     if request.method == "GET":
         searchPN = request.GET['searchPN']
         dateValueStr = request.GET['dateValueStr']
-
+        last6str = searchPN[-6:]
         alldatabase = get_database_by_DateRange(dateValueStr)
         output = list()
         COLUMNS = list()
         for DBName in alldatabase:
             table_list = get_sorting_alldatatable_byDBName(DBName)
             for TableName in table_list:
-                listout, CLOS = search_WaferSN_ChipSN(DBName, TableName, searchPN)
+                listout, CLOS = search_WaferSN_ChipSN(DBName, TableName, last6str)
                 if len(listout) != 0:
                     COLUMNS = CLOS
                     output.extend(listout)

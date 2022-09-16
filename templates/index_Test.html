@@ -7,8 +7,6 @@
 </head>
 
 <body>
-<form enctype="multipart/form-data" method="post">
-
     {% block content %}
         <select class="form-control" name="DBName" id="databasename" required="required">
             {% for c in alldatabase %}
@@ -21,7 +19,11 @@
                 <option>{{ c }}</option>
             {% endfor %}
         </select>
-
+        <BR>
+        <div id="textboxContainer">
+        </div>
+        <input type="text" id="tx_searchPN" value="Enter package PN">
+        <button id="bt_searchPN">Search PN</button>
 
         <table border="1px" width="100%" style="border-collapse: collapse;" name="TableShow" id="TableShow"
                required="required">
@@ -30,7 +32,8 @@
                 <th>{{ COLUMN }}</th>
             {% endfor %}
         </tr>
-
+        <BR>
+        <label id="lb_Status">....................</label>
         {% for row in data %}
             <tr>
                 {% for value in row %}
@@ -52,6 +55,78 @@
 
     <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
     <script>
+        const lb_Status = document.getElementById('lb_Status');
+        {#function addTextbox(event) {#}
+        const tx_searchPN = document.getElementById('tx_searchPN');
+        tx_searchPN.addEventListener('input', updateValue);
+        function updateValue(e){
+            {#alert("key: " + e.key)#}
+            {#alert("key: " + this.value)#}
+            {#console.log(this.value + " " + this.value.length);#}
+
+            if(this.value.length >= 5)
+            {
+                this.select();
+                search_table_by_value();
+            }
+
+            {#if(e.key == 'Enter')#}
+            {#    $("#bt_searchPN").click()#}
+        }
+        const bt_searchPN = document.getElementById('bt_searchPN');
+        bt_searchPN.addEventListener('click', search_table_by_value);
+        function search_table_by_value(e) {
+            var searchPN = $(tx_searchPN).val(); //获取选中的项
+            var hide_index = 0;
+            {#var val = this.value;#}
+            {#alert("searchPN: " + searchPN)#}
+            console.log("searchPN: " + searchPN);
+            $(lb_Status).text("Found Start.");
+            // 选择id=db_link的元素时触发该ajax请求，调用/comparison/get_table接口
+            $.ajax({
+                url: '/search_data_row/',
+                data: {"searchPN": searchPN},
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var content = '';
+                    console.log("data['output'].length: " + data['output'].length);
+                    if(data['output'].length == 0) {
+                        $(lb_Status).text("Nonfound.");
+                        $('#TableShow').html('')
+                        return
+                    }
+
+                    {#alert(123456);#}
+                    content += '<tr>';
+                    $.each(data['COLUMNS'], function (i, item) {
+                        // 调用接口后返回list数据[u'account_role', u'account_user'],循环遍历该list拼接选项的内容
+                        {#content += '<option value=' + item + '>' + item + '</option>'#}
+                        if (item == 'PNPDeviceID')
+                            hide_index = Number(i) + 1;
+
+                        content += '<th id=' + item + '>' + item + '</th>'
+                        {#alert(i);#}
+                        {#alert(COLUMNS);#}
+                    });
+                    content += '</tr>';
+                    $.each(data['output'], function (i, row) {
+                        // 调用接口后返回list数据[u'account_role', u'account_user'],循环遍历该list拼接选项的内容
+                        {#content += '<option value=' + item + '>' + item + '</option>'#}
+                        content += '<tr>';
+                        $.each(row, function (index, value) {
+                            content += '<td  align="center">' + value + '</td>'
+                        });
+                        content += '</tr>';
+                    });
+                    // 将拼接好的内容作为id=db_table这个select元素的内容
+                    $('#TableShow').html(content)
+                    {#alert("hide_index " + hide_index);#}
+                    $('#TableShow tr > *:nth-child(' + hide_index + ')').hide();
+                },
+            })
+            }
+
         $("#databasename").change(function () {
             var options = $("#databasename option:selected"); //获取选中的项
             var db_link_id = options.val(); //获取选中的值
@@ -77,7 +152,7 @@
             })
             $("#datatablename").change();
         })
-        $(document).ready(function(){
+        $(document).ready(function () {
             $("#datatablename").change();
         })
         $("#datatablename").change(function () {
@@ -91,7 +166,7 @@
 
             {#var val = this.value;#}
             {#alert(val)#}
-
+            $(lb_Status).text("Get Data wait.");
             // 选择id=db_link的元素时触发该ajax请求，调用/comparison/get_table接口
             $.ajax({
                 url: '/get_table_data/',
@@ -128,9 +203,8 @@
                     $('#TableShow tr > *:nth-child(' + hide_index + ')').hide();
                 },
             })
+            $(lb_Status).text("Get Data OK.");
         })
     </script>
-
-</form>
 </body>
 </html>

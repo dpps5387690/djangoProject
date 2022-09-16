@@ -25,4 +25,5 @@ urlpatterns = [
     url(r'^$', views.index_Test, name='index_Test'),
     url(r'^get_table/$', views.get_table, name='get_table'),
     url(r'^get_table_data/$', views.get_table_data, name='get_table_data'),
+    url(r'^search_data_row/$', views.search_data_row, name='search_data_row'),
 ]

@@ -3,8 +3,8 @@ import pymysql.cursors
 from django.http import JsonResponse
 from django.shortcuts import render
 
-mysqlhost = "192.168.50.5"  # "gigabytenandteam.ddns.net"
-mysqlport = 3307  # 33307
+mysqlhost = "gigabytenandteam.ddns.net"
+mysqlport = 33307
 mysqluser = "hywu"
 mysqlpw = "kOsJX0GfsqIzeukj"
 
@@ -27,33 +27,45 @@ def getdata(DBName, TableName):
         COLUMNS = [i[0] for i in cursor.description]  # for all Columns name
         output = [list(dict(i).values()) for i in data]
         conn.close()
-        #COLUMNS.remove('PNPDeviceID')
+        # COLUMNS.remove('PNPDeviceID')
     return output, COLUMNS
 
 
-def index_Test(request):
+def get_sorting_alldatabase():
     conn = pymysql.connect(host=mysqlhost, port=mysqlport, user=mysqluser, passwd=mysqlpw,
                            charset='utf8', cursorclass=pymysql.cursors.DictCursor)
     with conn.cursor() as cursor:
-        print(cursor.execute("SHOW DATABASES LIKE '%sorting_%'"))
+        count = cursor.execute("SHOW DATABASES LIKE '%sorting_%'")
+        print("alldatabase: %d" % count)
         data = cursor.fetchall()
         alldatabase = [list(dict(i).values())[0] for i in data]
         conn.close()
+    return alldatabase
 
-    nowdatabasename = alldatabase[0]
+
+def get_sorting_alldatatable_byDBName(nowdatabasename):
     conn = pymysql.connect(host=mysqlhost, port=mysqlport, user=mysqluser, passwd=mysqlpw,
                            db=nowdatabasename, charset='utf8', cursorclass=pymysql.cursors.DictCursor)
     with conn.cursor() as cursor:
-        print(cursor.execute("SHOW TABLES"))
+        count = cursor.execute("SHOW TABLES")
+        print("getalltable: %d" % count)
         data = cursor.fetchall()
         table_list = [list(dict(i).values())[0] for i in data]
         conn.close()
+    return table_list
+
+
+def index_Test(request):
+    alldatabase = get_sorting_alldatabase()
+    nowdatabasename = alldatabase[0]
+    table_list = get_sorting_alldatatable_byDBName(nowdatabasename)
 
     output, COLUMNS = getdata(nowdatabasename, table_list[0])
     return render(request, 'index_Test.html',
                   {'data': output, 'COLUMNS': COLUMNS, 'alldatabase': alldatabase, 'alldatatable': table_list})
     # return render(request, 'index_Test.html',
     #               {'alldatabase': alldatabase, 'alldatatable': table_list})
+
 
 def get_table(request):
     """
@@ -63,7 +75,7 @@ def get_table(request):
     if request.method == 'GET':
         # 获得前台传递来的id，查询对应的数据库连接信息
         db_link_id = request.GET.get('db_link_id')
-        print('从前台获得的id为：%s' % db_link_id)
+        # print('从前台获得的id为：%s' % db_link_id)
 
         conn = pymysql.connect(host=mysqlhost, port=mysqlport, user=mysqluser, passwd=mysqlpw,
                                db=db_link_id, charset='utf8', cursorclass=pymysql.cursors.DictCursor)
@@ -75,7 +87,7 @@ def get_table(request):
         cursor.execute("SHOW TABLES")
         data = list(cursor.fetchall())
         table_list = [list(dict(i).values())[0] for i in data]
-        print(table_list)
+        # print(table_list)
         return JsonResponse(table_list, safe=False)
 
 
@@ -84,4 +96,43 @@ def get_table_data(request):
         nowdatabasename = request.GET['db_Name']
         table = request.GET['db_Table']
         output, COLUMNS = getdata(nowdatabasename, table)
+        return JsonResponse(data={"COLUMNS": COLUMNS, "output": output}, safe=False)
+
+
+def search_WaferSN_ChipSN(DBName, TableName, searchvalue):
+    conn = pymysql.connect(host=mysqlhost, port=mysqlport, user=mysqluser, passwd=mysqlpw,
+                           db=DBName, charset='utf8', cursorclass=pymysql.cursors.DictCursor)
+
+    output = list()
+    COLUMNS = list()
+    with conn.cursor() as cursor:
+        # cursor.execute("SELECT * FROM %s" % TableName)
+        count = cursor.execute(
+            "SELECT * FROM %s WHERE WaferSN LIKE '%s' OR ChipSN LIKE '%s'" % (
+                TableName, searchvalue, searchvalue))
+        print("DBName: %s TableName: %s len(data): %d" % (DBName, TableName, count))
+        if count != 0:
+            COLUMNS = [i[0] for i in cursor.description]  # for all Columns name
+            data = cursor.fetchall()
+            output = [list(dict(i).values()) for i in data]
+        conn.close()
+        # COLUMNS.remove('PNPDeviceID')
+    return output, COLUMNS
+
+
+def search_data_row(request):
+    if request.method == "GET":
+        searchPN = request.GET['searchPN']
+
+        alldatabase = get_sorting_alldatabase()
+        output = list()
+        COLUMNS = list()
+        for DBName in alldatabase:
+            table_list = get_sorting_alldatatable_byDBName(DBName)
+            for TableName in table_list:
+                listout, CLOS = search_WaferSN_ChipSN(DBName, TableName, searchPN)
+                if len(listout) != 0:
+                    COLUMNS = CLOS
+                    output.extend(listout)
+
         return JsonResponse(data={"COLUMNS": COLUMNS, "output": output}, safe=False)

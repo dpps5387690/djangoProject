@@ -4,6 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Test</title>
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
 </head>
 
 <body>
@@ -54,8 +59,10 @@
     {% endfor %}
 {% endblock %}
 </table>
-<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+
 <script>
+    $("#tx_daterange").daterangepicker();
+
     const lb_Status = document.getElementById('lb_Status');
 
     const tx_searchPN = document.getElementById('tx_searchPN');

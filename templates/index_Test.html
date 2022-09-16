@@ -61,7 +61,16 @@
 </table>
 
 <script>
-    $("#tx_daterange").daterangepicker();
+    $("#tx_daterange").daterangepicker({
+        startDate: "2022-09-01",
+        endDate: "2022-09-15",
+        locale: {
+            format: 'YYYYMMDD',
+            separator: " "
+        }
+    });
+
+    const tx_daterange = document.getElementById('tx_daterange');
 
     const lb_Status = document.getElementById('lb_Status');
 
@@ -72,7 +81,7 @@
         // alert("key: " + e.key)
         // alert("key: " + this.value)
         // console.log(this.value + " " + this.value.length);
-
+        console.log("tx_daterange: " + $(tx_daterange).val());
         if (this.value.length >= 5) {
             this.select();
             search_table_by_value();
@@ -88,6 +97,7 @@
     function search_table_by_value(e) {
         var searchPN = $(tx_searchPN).val(); //获取选中的项
         var hide_index = 0;
+        var dateValueStr = $(tx_daterange).val();
         // var val = this.value;
         // alert("searchPN: " + searchPN)
         console.log("searchPN: " + searchPN);
@@ -95,7 +105,7 @@
         // 选择id=db_link的元素时触发该ajax请求，调用/comparison/get_table接口
         $.ajax({
             url: '/search_data_row/',
-            data: {"searchPN": searchPN},
+            data: {"searchPN": searchPN, "dateValueStr": dateValueStr},
             type: 'GET',
             dataType: 'json',
             success: function (data) {

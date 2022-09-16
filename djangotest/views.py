@@ -54,7 +54,6 @@ def get_sorting_alldatatable_byDBName(nowdatabasename):
         conn.close()
     return table_list
 
-
 def index_Test(request):
     alldatabase = get_sorting_alldatabase()
     nowdatabasename = alldatabase[0]
@@ -119,12 +118,26 @@ def search_WaferSN_ChipSN(DBName, TableName, searchvalue):
         # COLUMNS.remove('PNPDeviceID')
     return output, COLUMNS
 
+def get_database_by_DateRange(DateRange):
+    conn = pymysql.connect(host=mysqlhost, port=mysqlport, user=mysqluser, passwd=mysqlpw,
+                           charset='utf8', cursorclass=pymysql.cursors.DictCursor)
+    with conn.cursor() as cursor:
+        DateList = DateRange.split()
+        commandstr = "SELECT table_schema,create_time FROM information_schema.tables  WHERE table_schema LIKE '%%sorting_%%' " \
+                     "AND create_time > DATE('%s') AND create_time < DATE('%s') GROUP BY TABLE_SCHEMA" % (DateList[0], DateList[1])
+        count = cursor.execute(commandstr)
+        print("alldatabase: %d" % count)
+        data = cursor.fetchall()
+        databasebyDateRange = [list(dict(i).values())[0] for i in data]
+        conn.close()
+    return databasebyDateRange
 
 def search_data_row(request):
     if request.method == "GET":
         searchPN = request.GET['searchPN']
+        dateValueStr = request.GET['dateValueStr']
 
-        alldatabase = get_sorting_alldatabase()
+        alldatabase = get_database_by_DateRange(dateValueStr)
         output = list()
         COLUMNS = list()
         for DBName in alldatabase:

@@ -98,7 +98,7 @@ def get_table_data(request):
         return JsonResponse(data={"COLUMNS": COLUMNS, "output": output}, safe=False)
 
 
-def search_WaferSN_ChipSN(DBName, TableName, searchvalue):
+def search_WaferSN_ChipSN(DBName, TableName, waferSN, chipSN):
     conn = pymysql.connect(host=mysqlhost, port=mysqlport, user=mysqluser, passwd=mysqlpw,
                            db=DBName, charset='utf8', cursorclass=pymysql.cursors.DictCursor)
 
@@ -107,8 +107,8 @@ def search_WaferSN_ChipSN(DBName, TableName, searchvalue):
     with conn.cursor() as cursor:
         # cursor.execute("SELECT * FROM %s" % TableName)
         count = cursor.execute(
-            "SELECT * FROM %s WHERE WaferSN LIKE '%s' OR ChipSN LIKE '%s'" % (
-                TableName, searchvalue, searchvalue))
+            "SELECT * FROM %s WHERE WaferSN LIKE '%s' AND ChipSN LIKE '%s'" % (
+                TableName, waferSN, chipSN))
         print("DBName: %s TableName: %s len(data): %d" % (DBName, TableName, count))
         if count != 0:
             COLUMNS = [i[0] for i in cursor.description]  # for all Columns name
@@ -136,14 +136,15 @@ def search_data_row(request):
     if request.method == "GET":
         searchPN = request.GET['searchPN']
         dateValueStr = request.GET['dateValueStr']
-        last6str = searchPN[-6:]
+        waferSN = searchPN[-14:-6]
+        chipSN = searchPN[-6:]
         alldatabase = get_database_by_DateRange(dateValueStr)
         output = list()
         COLUMNS = list()
         for DBName in alldatabase:
             table_list = get_sorting_alldatatable_byDBName(DBName)
             for TableName in table_list:
-                listout, CLOS = search_WaferSN_ChipSN(DBName, TableName, last6str)
+                listout, CLOS = search_WaferSN_ChipSN(DBName, TableName,waferSN, chipSN)
                 if len(listout) != 0:
                     COLUMNS = CLOS
                     output.extend(listout)

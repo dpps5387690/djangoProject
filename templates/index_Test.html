@@ -101,6 +101,7 @@
         // var val = this.value;
         // alert("searchPN: " + searchPN)
         console.log("searchPN: " + searchPN);
+        tx_searchPN.select();
         $(lb_Status).text("Found Start.");
         // 选择id=db_link的元素时触发该ajax请求，调用/comparison/get_table接口
         $.ajax({

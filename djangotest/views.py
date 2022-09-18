@@ -57,13 +57,10 @@ def get_sorting_alldatatable_byDBName(nowdatabasename):
 def index_Test(request):
     alldatabase = get_sorting_alldatabase()
     nowdatabasename = alldatabase[0]
-    table_list = get_sorting_alldatatable_byDBName(nowdatabasename)
+    alldatatable = get_sorting_alldatatable_byDBName(nowdatabasename)
 
-    output, COLUMNS = getdata(nowdatabasename, table_list[0])
-    return render(request, 'index_Test.html',
-                  {'data': output, 'COLUMNS': COLUMNS, 'alldatabase': alldatabase, 'alldatatable': table_list})
-    # return render(request, 'index_Test.html',
-    #               {'alldatabase': alldatabase, 'alldatatable': table_list})
+    output, COLUMNS = getdata(nowdatabasename, alldatatable[0])
+    return render(request, 'index_Test.html', locals())
 
 
 def get_table(request):

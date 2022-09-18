@@ -13,6 +13,8 @@
 
 <body>
 {% block content %}
+
+    <label>Select DB and Table</label><BR>
     <select class="form-control" name="DBName" id="databasename" required="required">
         {% for c in alldatabase %}
             <option>{{ c }}</option>
@@ -23,12 +25,17 @@
         {% for c in alldatatable %}
             <option>{{ c }}</option>
         {% endfor %}
-    </select>
-    <BR>
-    <div id="textboxContainer">
-    </div>
-    <input type="text" id="tx_searchPN" value="Enter package PN" maxlength="30" style="width:300px;">
-    <button id="bt_searchPN">Search PN</button>
+    </select><BR><BR>
+
+
+    <label>Search by 2DID code</label><BR>
+    <input type="text" id="tx_daterange" value="01/01/2018 - 01/15/2018"/><BR>
+    <input type="text" id="tx_searchPN" value="...." maxlength="30" style="width:300px;">
+    <button id="bt_searchPN">Search PN</button><BR>
+
+
+    <BR><label>Status Log: </label>
+    <label id="lb_Status">....................</label><BR><BR>
 
     <table border="1px" width="100%" style="border-collapse: collapse;" name="TableShow" id="TableShow"
            required="required">
@@ -37,10 +44,7 @@
             <th>{{ COLUMN }}</th>
         {% endfor %}
     </tr>
-    <BR>
-    <input type="text" id="tx_daterange" value="01/01/2018 - 01/15/2018"/>
-    <BR>
-    <label id="lb_Status">....................</label>
+
     {% for row in output %}
         <tr>
             {% for value in row %}

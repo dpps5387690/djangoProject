@@ -9,6 +9,8 @@ mysqluser = "hywu"
 mysqlpw = "kOsJX0GfsqIzeukj"
 
 
+
+
 # Create your views here.
 def hello_view(request):
     return render(request, 'hello_django.html', {
@@ -54,12 +56,15 @@ def get_sorting_alldatatable_byDBName(nowdatabasename):
         conn.close()
     return table_list
 
+
 def index_Test(request):
     alldatabase = get_sorting_alldatabase()
     nowdatabasename = alldatabase[0]
     alldatatable = get_sorting_alldatatable_byDBName(nowdatabasename)
-
+    global logstatus
+    logstatus = "index_Test getdata Start"
     output, COLUMNS = getdata(nowdatabasename, alldatatable[0])
+    logstatus = "index_Test getdata End"
     return render(request, 'index_Test.html', locals())
 
 
@@ -107,6 +112,8 @@ def search_WaferSN_ChipSN(DBName, TableName, waferSN, chipSN):
             "SELECT * FROM %s WHERE WaferSN LIKE '%s' AND ChipSN LIKE '%s'" % (
                 TableName, waferSN, chipSN))
         print("DBName: %s TableName: %s len(data): %d" % (DBName, TableName, count))
+        global logstatus
+        logstatus = "DBName: %s TableName: %s len(data): %d" % (DBName, TableName, count)
         if count != 0:
             COLUMNS = [i[0] for i in cursor.description]  # for all Columns name
             data = cursor.fetchall()
@@ -115,19 +122,22 @@ def search_WaferSN_ChipSN(DBName, TableName, waferSN, chipSN):
         # COLUMNS.remove('PNPDeviceID')
     return output, COLUMNS
 
+
 def get_database_by_DateRange(DateRange):
     conn = pymysql.connect(host=mysqlhost, port=mysqlport, user=mysqluser, passwd=mysqlpw,
                            charset='utf8', cursorclass=pymysql.cursors.DictCursor)
     with conn.cursor() as cursor:
         DateList = DateRange.split()
         commandstr = "SELECT table_schema,create_time FROM information_schema.tables  WHERE table_schema LIKE '%%sorting_%%' " \
-                     "AND create_time > DATE('%s') AND create_time < DATE('%s') GROUP BY TABLE_SCHEMA" % (DateList[0], DateList[1])
+                     "AND create_time > DATE('%s') AND create_time < DATE('%s') GROUP BY TABLE_SCHEMA" % (
+                     DateList[0], DateList[1])
         count = cursor.execute(commandstr)
         print("alldatabase: %d" % count)
         data = cursor.fetchall()
         databasebyDateRange = [list(dict(i).values())[0] for i in data]
         conn.close()
     return databasebyDateRange
+
 
 def search_data_row(request):
     if request.method == "GET":
@@ -141,9 +151,13 @@ def search_data_row(request):
         for DBName in alldatabase:
             table_list = get_sorting_alldatatable_byDBName(DBName)
             for TableName in table_list:
-                listout, CLOS = search_WaferSN_ChipSN(DBName, TableName,waferSN, chipSN)
+                listout, CLOS = search_WaferSN_ChipSN(DBName, TableName, waferSN, chipSN)
                 if len(listout) != 0:
                     COLUMNS = CLOS
                     output.extend(listout)
 
         return JsonResponse(data={"COLUMNS": COLUMNS, "output": output}, safe=False)
+
+
+def get_now_Status(request):
+    return JsonResponse(logstatus, safe=False)

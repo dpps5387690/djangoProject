@@ -221,6 +221,18 @@
         })
         $(lb_Status).text("Get Data OK.");
     })
+
+    /*$(document).ready(function () {
+        function refresh() {
+            $.getJSON("/get_now_Status/", function (ret) {
+                console.log("outstatus: " + ret)
+                $(lb_Status).text(ret);
+            })
+        }
+
+        setInterval(refresh, 100)
+    })*/
+
 </script>
 </body>
 </html>

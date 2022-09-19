@@ -5,6 +5,13 @@ from django.shortcuts import render
 
 mysqlhost = "gigabytenandteam.ddns.net"
 mysqlport = 33307
+
+# mysqlhost = "192.168.50.5"
+# mysqlport = 3307
+
+# mysqlhost = "10.1.8.91"  # "gigabytenandteam.ddns.net"
+# mysqlport = 3306  # 33307
+
 mysqluser = "hywu"
 mysqlpw = "kOsJX0GfsqIzeukj"
 

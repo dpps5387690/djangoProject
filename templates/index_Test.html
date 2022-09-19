@@ -86,7 +86,8 @@
         // alert("key: " + this.value)
         // console.log(this.value + " " + this.value.length);
         //console.log("tx_daterange: " + $(tx_daterange).val());
-        if (this.value.length >= 29) {
+
+        if (this.value.length > 28) {
             this.select();
             search_table_by_value();
         }
@@ -105,7 +106,7 @@
         // var val = this.value;
         // alert("searchPN: " + searchPN)
         console.log("searchPN: " + searchPN);
-        tx_searchPN.select();
+
         $(lb_Status).text("Found Start.");
         // 选择id=db_link的元素时触发该ajax请求，调用/comparison/get_table接口
         $.ajax({
@@ -116,6 +117,7 @@
             success: function (data) {
                 var content = '';
                 console.log("data['output'].length: " + data['output'].length);
+                tx_searchPN.select();
                 if (data['output'].length == 0) {
                     $(lb_Status).text("Nonfound.");
                     $('#TableShow').html('')

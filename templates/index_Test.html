@@ -145,9 +145,9 @@
                 $('#TableShow').html(content)
                 // ("hide_index " + hide_index);
                 $('#TableShow tr > *:nth-child(' + hide_index + ')').hide();
+                $(lb_Status).text("Find " + data['output'].length + " matches.");
             },
         })
-        $(lb_Status).text("Found End.");
     }
 
     $("#databasename").change(function () {

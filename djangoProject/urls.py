@@ -27,4 +27,5 @@ urlpatterns = [
     url(r'^get_table_data/$', views.get_table_data, name='get_table_data'),
     url(r'^search_data_row/$', views.search_data_row, name='search_data_row'),
     url(r'^get_now_Status/$', views.get_now_Status, name='get_now_Status'),
+    url(r'^multi_Files_Upload/$', views.multi_Files_Upload, name='multi_Files_Upload'),
 ]

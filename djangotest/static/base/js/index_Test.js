@@ -181,15 +181,27 @@ function uploadMultiFiles() {
 
     csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
 
-    console.log(csrf_token);
+    // console.log(csrf_token);
 
-    // alert("key: " + e.key)
-    // alert("key: " + this.value)
-    // console.log(this.value + " " + this.value.length);
-    //console.log("tx_daterange: " + $(tx_daterange).val());
+    form_data.append("csrfmiddlewaretoken", csrf_token);
 
-    // if(e.key == 'Enter')
-    //     $("#bt_searchPN").click()
+    $.ajax({
+        url: '/multi_Files_Upload/', // point to server-side URL
+        dataType: 'json', // what to expect back from server
+        cache: false,
+        contentType: false,
+        processData: false,
+        //data: {'data': form_data, 'csrfmiddlewaretoken': csrf_token},
+        data: form_data,
+        type: 'post',
+
+        success: function (response) { // display success response
+            $('#msg').html(response.msg);
+        },
+        // error: function (response) {
+        //     $('#msg').html(response.message); // display error response
+        // }
+    })
 }
 
 /*$(document).ready(function () {

@@ -168,3 +168,9 @@ def search_data_row(request):
 
 def get_now_Status(request):
     return JsonResponse(logstatus, safe=False)
+
+def multi_Files_Upload(request):
+    if request.method == 'POST':
+        files = request.FILES.getlist('files[]', None)
+        print(files)
+        return JsonResponse({'msg':'<div class="alert alert-success" role="alert">File successfully uploaded</div>'})

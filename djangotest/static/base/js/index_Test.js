@@ -6,13 +6,20 @@ $("#tx_daterange").daterangepicker({
         separator: " "
     }
 });
-
+const lb_Status = document.getElementById('lb_Status');
 const tx_daterange = document.getElementById('tx_daterange');
 
-const lb_Status = document.getElementById('lb_Status');
-
 const tx_searchPN = document.getElementById('tx_searchPN');
-tx_searchPN.addEventListener('input', updateValue);
+
+$(document).ready(function () {
+    datatablename_change();
+    $('#bt_upload').on('click', uploadMultiFiles);
+    $('#tx_searchPN').on('input', updateValue);
+    $('#bt_searchPN').on('click', search_table_by_value);
+    $('#databasename').on('change', databasename_change);
+
+    $("#datatablename").on('change', datatablename_change);
+});
 
 function updateValue(e) {
     // alert("key: " + e.key)
@@ -28,9 +35,6 @@ function updateValue(e) {
     // if(e.key == 'Enter')
     //     $("#bt_searchPN").click()
 }
-
-const bt_searchPN = document.getElementById('bt_searchPN');
-bt_searchPN.addEventListener('click', search_table_by_value);
 
 function search_table_by_value(e) {
     var searchPN = $(tx_searchPN).val(); //获取选中的项
@@ -85,7 +89,7 @@ function search_table_by_value(e) {
     })
 }
 
-$("#databasename").change(function () {
+function databasename_change() {
     var options = $("#databasename option:selected"); //获取选中的项
     var db_link_id = options.val(); //获取选中的值
     // alert("ok");
@@ -106,14 +110,12 @@ $("#databasename").change(function () {
             });
             // 将拼接好的内容作为id=db_table这个select元素的内容
             $('#datatablename').html(content)
+            datatablename_change();
         },
     })
-    $("#datatablename").change();
-})
-$(document).ready(function () {
-    $("#datatablename").change();
-})
-$("#datatablename").change(function () {
+}
+
+function datatablename_change() {
     var options = $("#databasename option:selected"); //获取选中的项
     var db_Name = options.val(); //获取选中的值
     options = $("#datatablename option:selected"); //获取选中的项
@@ -121,7 +123,7 @@ $("#datatablename").change(function () {
     var hide_index = 0;
     // alert("ok");
     // alert(db_Name + " " + db_Table);
-
+    console.log("db_Name: " + db_Name + " db_Table: " + db_Table)
     // var val = this.value;
     // alert(val)
     $(lb_Status).text("Get Data wait.");
@@ -160,7 +162,35 @@ $("#datatablename").change(function () {
         },
     })
     $(lb_Status).text("Get Data OK.");
-})
+}
+
+
+function uploadMultiFiles() {
+    console.log("uploadMultiFiles");
+    var form_data = new FormData();
+    var ins = document.getElementById('multiFiles').files.length;
+    console.log("ins: " + ins);
+    if (ins == 0) {
+        $('#msg').html('<div class="alert alert-danger" role="alert">Select at least one file</div>');
+        return;
+    }
+    for (var x = 0; x < ins; x++) {
+        form_data.append("files[]", document.getElementById('multiFiles').files[x]);
+    }
+    console.log(form_data);
+
+    csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+
+    console.log(csrf_token);
+
+    // alert("key: " + e.key)
+    // alert("key: " + this.value)
+    // console.log(this.value + " " + this.value.length);
+    //console.log("tx_daterange: " + $(tx_daterange).val());
+
+    // if(e.key == 'Enter')
+    //     $("#bt_searchPN").click()
+}
 
 /*$(document).ready(function () {
     function refresh() {

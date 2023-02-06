@@ -28,4 +28,5 @@ urlpatterns = [
     url(r'^search_data_row/$', views.search_data_row, name='search_data_row'),
     url(r'^get_now_Status/$', views.get_now_Status, name='get_now_Status'),
     url(r'^multi_Files_Upload/$', views.multi_Files_Upload, name='multi_Files_Upload'),
+    url(r'^callback/$', views.callback, name='callback'),
 ]

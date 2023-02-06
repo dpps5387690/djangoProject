@@ -27,7 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['djangohywu.onrender.com', '127.0.0.1']
 
+LINE_CHANNEL_ACCESS_TOKEN = '1LDEHNxc5HONIhndCfMJZnGp/SUNnOKZbI4xVZG6vmhr5rjFS7ToBqpBH/f0czXB8VQujbL4LvRmwxweAwXb9ydJTw3kETjQx82nXpbTSDjzXl1njyOlxjmgd8rHWpNUwNBC5JLJO7F4kEnk/JrJXgdB04t89/1O/w1cDnyilFU='
 
+LINE_CHANNEL_SECRET = 'cfbc36bcafa0f194a7ca7bf64c69027d'
 # Application definition
 
 INSTALLED_APPS = [

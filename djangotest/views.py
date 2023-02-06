@@ -3,23 +3,57 @@ import pymysql.cursors
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+
+from linebot import LineBotApi, WebhookParser
+from linebot.exceptions import InvalidSignatureError, LineBotApiError
+from linebot.models import MessageEvent, TextSendMessage
+
+line_bot_api = LineBotApi(settings.LINE_CHANNEL_ACCESS_TOKEN)
+parser = WebhookParser(settings.LINE_CHANNEL_SECRET)
+
+
 # mysqlhost = "gigabytenandteam.ddns.net"
 # mysqlport = 33307
 
 # mysqlhost = "192.168.50.5"
 # mysqlport = 3307
 
-mysqlhost = "nandsorting.ddns.net"
-mysqlport = 33306
+# mysqlhost = "nandsorting.ddns.net"
+# mysqlport = 33306
 
-# mysqlhost = "10.1.8.91"  # "gigabytenandteam.ddns.net"
-# mysqlport = 3306  # 33307
+mysqlhost = "10.1.8.91"  # "gigabytenandteam.ddns.net"
+mysqlport = 3306  # 33307
 
 mysqluser = "hywu"
 mysqlpw = "kOsJX0GfsqIzeukj"
 
 
+@csrf_exempt
+def callback(request):
+    if request.method == 'POST':
+        signature = request.META['HTTP_X_LINE_SIGNATURE']
+        body = request.body.decode('utf-8')
 
+        try:
+            events = parser.parse(body, signature)  # 傳入的事件
+        except InvalidSignatureError:
+            return HttpResponseForbidden()
+        except LineBotApiError:
+            return HttpResponseBadRequest()
+
+        for event in events:
+            if isinstance(event, MessageEvent):  # 如果有訊息事件
+                line_bot_api.reply_message(  # 回復傳入的訊息文字
+                    event.reply_token,
+                    TextSendMessage(text=event.message.text)
+                )
+        return HttpResponse()
+    else:
+        return HttpResponseBadRequest()
 
 # Create your views here.
 def hello_view(request):

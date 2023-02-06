@@ -22,15 +22,16 @@ parser = WebhookParser(settings.LINE_CHANNEL_SECRET)
 # mysqlhost = "192.168.50.5"
 # mysqlport = 3307
 
-# mysqlhost = "nandsorting.ddns.net"
-# mysqlport = 33306
+mysqlhost = "nandsorting.ddns.net"
+mysqlport = 33306
 
-mysqlhost = "10.1.8.91"  # "gigabytenandteam.ddns.net"
-mysqlport = 3306  # 33307
+# mysqlhost = "10.1.8.91"  # "gigabytenandteam.ddns.net"
+# mysqlport = 3306  # 33307
 
 mysqluser = "hywu"
 mysqlpw = "kOsJX0GfsqIzeukj"
 
+# pip freeze > requirements.txt
 
 @csrf_exempt
 def callback(request):

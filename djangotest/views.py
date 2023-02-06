@@ -1,3 +1,5 @@
+import datetime
+
 import pymysql
 import pymysql.cursors
 from django.http import JsonResponse
@@ -14,7 +16,6 @@ from linebot.models import MessageEvent, TextSendMessage
 
 line_bot_api = LineBotApi(settings.LINE_CHANNEL_ACCESS_TOKEN)
 parser = WebhookParser(settings.LINE_CHANNEL_SECRET)
-
 
 # mysqlhost = "gigabytenandteam.ddns.net"
 # mysqlport = 33307
@@ -56,10 +57,13 @@ def LineCallback(request):
                 print("message: %s" % event.message.text)
 
                 searchPN = event.message.text
-                dateValueStr = "20230201 20230211"
+                NowTime = datetime.datetime.now()
+                StartTime = NowTime + datetime.timedelta(days=-3)
+                dateValueStr = StartTime.strftime('%Y%m%d') + " " + NowTime.strftime(
+                    '%Y%m%d')  # "20230201 20230211"
 
                 output, COLUMNS = get_all_data_by_PN_and_date(searchPN, dateValueStr)
-                Message = list()
+                # Message = list()
                 if len(output) != 0:
 
                     notprint = ["ID", "WaferSN", "ChipSN", "Date Created", "Erase BB",
@@ -244,8 +248,9 @@ def search_data_row(request):
 def get_now_Status(request):
     return JsonResponse(logstatus, safe=False)
 
+
 def multi_Files_Upload(request):
     if request.method == 'POST':
         files = request.FILES.getlist('files[]', None)
         print(files)
-        return JsonResponse({'msg':'<div class="alert alert-success" role="alert">File successfully uploaded</div>'})
+        return JsonResponse({'msg': '<div class="alert alert-success" role="alert">File successfully uploaded</div>'})

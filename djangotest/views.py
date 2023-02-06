@@ -31,10 +31,11 @@ mysqlport = 33306
 mysqluser = "hywu"
 mysqlpw = "kOsJX0GfsqIzeukj"
 
+
 # pip freeze > requirements.txt
 
 @csrf_exempt
-def callback(request):
+def LineCallback(request):
     if request.method == 'POST':
         signature = request.META['HTTP_X_LINE_SIGNATURE']
         body = request.body.decode('utf-8')
@@ -48,13 +49,43 @@ def callback(request):
 
         for event in events:
             if isinstance(event, MessageEvent):  # 如果有訊息事件
-                line_bot_api.reply_message(  # 回復傳入的訊息文字
-                    event.reply_token,
-                    TextSendMessage(text=event.message.text)
-                )
+                # line_bot_api.reply_message(  # 回復傳入的訊息文字
+                #     event.reply_token,
+                #     TextSendMessage(text=event.message.text)
+                # )
+                print("message: %s" % event.message.text)
+
+                searchPN = event.message.text
+                dateValueStr = "20230201 20230211"
+
+                output, COLUMNS = get_all_data_by_PN_and_date(searchPN, dateValueStr)
+                Message = list()
+                if len(output) != 0:
+
+                    notprint = ["ID", "WaferSN", "ChipSN", "Date Created", "Erase BB",
+                                "Write Busy Time", "BB Plane", "Yield Rate", "Error Code"]
+                    strline = ""
+                    # strline = notprint + "\n"
+                    for liststr in output:
+
+                        for index, str in enumerate(liststr):
+                            if COLUMNS[index] in notprint:
+                                strline += "%s\t" % str
+                        strline += "\n"
+                    Message = TextSendMessage(text=strline)
+                    line_bot_api.reply_message(  # 回復傳入的訊息文字
+                        event.reply_token,
+                        Message
+                    )
+                else:
+                    line_bot_api.reply_message(  # 回復傳入的訊息文字
+                        event.reply_token,
+                        TextSendMessage(text="Not Found")
+                    )
         return HttpResponse()
     else:
         return HttpResponseBadRequest()
+
 
 # Create your views here.
 def hello_view(request):
@@ -156,7 +187,7 @@ def search_WaferSN_ChipSN(DBName, TableName, waferSN, chipSN):
         count = cursor.execute(
             "SELECT * FROM %s WHERE WaferSN LIKE '%s' AND ChipSN LIKE '%s'" % (
                 TableName, waferSN, chipSN))
-        print("DBName: %s TableName: %s len(data): %d" % (DBName, TableName, count))
+        # print("DBName: %s TableName: %s len(data): %d" % (DBName, TableName, count))
         global logstatus
         logstatus = "DBName: %s TableName: %s len(data): %d" % (DBName, TableName, count)
         if count != 0:
@@ -174,8 +205,8 @@ def get_database_by_DateRange(DateRange):
     with conn.cursor() as cursor:
         DateList = DateRange.split()
         commandstr = "SELECT table_schema,create_time FROM information_schema.tables  WHERE table_schema LIKE '%%sorting_%%' " \
-                     "AND create_time > DATE('%s') AND create_time < DATE('%s') GROUP BY TABLE_SCHEMA" % (
-                     DateList[0], DateList[1])
+                     "AND create_time > DATE('%s') AND create_time <= DATE('%s') GROUP BY TABLE_SCHEMA" % (
+                         DateList[0], DateList[1])
         count = cursor.execute(commandstr)
         print("alldatabase: %d" % count)
         data = cursor.fetchall()
@@ -184,22 +215,28 @@ def get_database_by_DateRange(DateRange):
     return databasebyDateRange
 
 
+def get_all_data_by_PN_and_date(searchPN, dateValueStr):
+    waferSN = searchPN[-14:-6]
+    chipSN = searchPN[-6:]
+    alldatabase = get_database_by_DateRange(dateValueStr)
+    output = list()
+    COLUMNS = list()
+    for DBName in alldatabase:
+        table_list = get_sorting_alldatatable_byDBName(DBName)
+        for TableName in table_list:
+            listout, CLOS = search_WaferSN_ChipSN(DBName, TableName, waferSN, chipSN)
+            if len(listout) != 0:
+                COLUMNS = CLOS
+                output.extend(listout)
+    return output, COLUMNS
+
+
 def search_data_row(request):
     if request.method == "GET":
         searchPN = request.GET['searchPN']
         dateValueStr = request.GET['dateValueStr']
-        waferSN = searchPN[-14:-6]
-        chipSN = searchPN[-6:]
-        alldatabase = get_database_by_DateRange(dateValueStr)
-        output = list()
-        COLUMNS = list()
-        for DBName in alldatabase:
-            table_list = get_sorting_alldatatable_byDBName(DBName)
-            for TableName in table_list:
-                listout, CLOS = search_WaferSN_ChipSN(DBName, TableName, waferSN, chipSN)
-                if len(listout) != 0:
-                    COLUMNS = CLOS
-                    output.extend(listout)
+        print("dateValueStr: %s" % dateValueStr)
+        output, COLUMNS = get_all_data_by_PN_and_date(searchPN, dateValueStr)
 
         return JsonResponse(data={"COLUMNS": COLUMNS, "output": output}, safe=False)
 

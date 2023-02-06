@@ -1,6 +1,6 @@
 $("#tx_daterange").daterangepicker({
-    startDate: "2022-09-01",
-    endDate: "2022-09-15",
+    startDate: "2023-02-01",
+    endDate: "2023-02-11",
     locale: {
         format: 'YYYYMMDD',
         separator: " "

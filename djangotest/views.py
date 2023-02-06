@@ -66,14 +66,14 @@ def LineCallback(request):
                 # Message = list()
                 if len(output) != 0:
 
-                    notprint = ["ID", "WaferSN", "ChipSN", "Date Created", "Erase BB",
-                                "Write Busy Time", "BB Plane", "Yield Rate", "Error Code"]
+                    haveprint = ["ID", "WaferSN", "ChipSN", "Date Created", "Erase BB",
+                                 "Write Busy Time", "BB Plane", "Yield Rate", "Error Code"]
                     strline = ""
                     # strline = notprint + "\n"
                     for liststr in output:
 
                         for index, str in enumerate(liststr):
-                            if COLUMNS[index] in notprint:
+                            if COLUMNS[index] in haveprint:
                                 strline += "%s\t" % str
                         strline += "\n"
                     Message = TextSendMessage(text=strline)
@@ -195,9 +195,21 @@ def search_WaferSN_ChipSN(DBName, TableName, waferSN, chipSN):
         global logstatus
         logstatus = "DBName: %s TableName: %s len(data): %d" % (DBName, TableName, count)
         if count != 0:
-            COLUMNS = [i[0] for i in cursor.description]  # for all Columns name
+            haveprint = ["ID", "WaferSN", "ChipSN", "Date Created", "Erase BB",
+                         "Write Busy Time", "BB Plane", "Yield Rate", "Error Code"]
+
+            for i in cursor.description:
+                if i[0] in haveprint:
+                    COLUMNS.append(i[0])
+            # COLUMNS = [i[0] for i in cursor.description]  # for all Columns name
             data = cursor.fetchall()
-            output = [list(dict(i).values()) for i in data]
+            oo = list()
+            for index, i in enumerate(list(dict(data[0]).values())):
+                if cursor.description[index][0] in haveprint:
+                    oo.append(i)
+
+            output.append(oo)
+            # output = [list(dict(i).values()) for i in data]
         conn.close()
         # COLUMNS.remove('PNPDeviceID')
     return output, COLUMNS

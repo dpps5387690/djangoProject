@@ -64,8 +64,8 @@ function search_table_by_value(e) {
             content += '<tr>';
             $.each(data['COLUMNS'], function (i, item) {
                 // 调用接口后返回list数据[u'account_role', u'account_user'],循环遍历该list拼接选项的内容
-                if (item == 'PNPDeviceID')
-                    hide_index = Number(i) + 1;
+                // if (item == 'PNPDeviceID')
+                //     hide_index = Number(i) + 1;
 
                 content += '<th id=' + item + '>' + item + '</th>'
                 // alert(i);

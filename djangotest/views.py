@@ -97,7 +97,25 @@ def hello_view(request):
         'data': "Hello Django ",
     })
 
+def output_Colums(cursor, data):
+    output = list()
+    COLUMNS = list()
+    haveprint = ["ID", "WaferSN", "ChipSN", "Date Created", "Erase BB",
+                 "Write Busy Time", "BB Plane", "Yield Rate", "Error Code"]
 
+    for i in cursor.description:
+        if i[0] in haveprint:
+            COLUMNS.append(i[0])
+    # COLUMNS = [i[0] for i in cursor.description]  # for all Columns name
+
+    for dd in data:
+        oo = list()
+        for index, i in enumerate(list(dict(dd).values())):
+            if cursor.description[index][0] in haveprint:
+                oo.append(i)
+        output.append(oo)
+    # output = [list(dict(i).values()) for i in data]
+    return output, COLUMNS
 # 資料讀取
 def getdata(DBName, TableName):
     conn = pymysql.connect(host=mysqlhost, port=mysqlport, user=mysqluser, passwd=mysqlpw,
@@ -106,8 +124,9 @@ def getdata(DBName, TableName):
         # cursor.execute("SELECT * FROM sortingreport_000")
         cursor.execute("SELECT * FROM %s" % TableName)
         data = cursor.fetchall()
-        COLUMNS = [i[0] for i in cursor.description]  # for all Columns name
-        output = [list(dict(i).values()) for i in data]
+        # COLUMNS = [i[0] for i in cursor.description]  # for all Columns name
+        # output = [list(dict(i).values()) for i in data]
+        output, COLUMNS = output_Colums(cursor, data)
         conn.close()
         # COLUMNS.remove('PNPDeviceID')
     return output, COLUMNS
@@ -195,22 +214,10 @@ def search_WaferSN_ChipSN(DBName, TableName, waferSN, chipSN):
         global logstatus
         logstatus = "DBName: %s TableName: %s len(data): %d" % (DBName, TableName, count)
         if count != 0:
-            haveprint = ["ID", "WaferSN", "ChipSN", "Date Created", "Erase BB",
-                         "Write Busy Time", "BB Plane", "Yield Rate", "Error Code"]
-
-            for i in cursor.description:
-                if i[0] in haveprint:
-                    COLUMNS.append(i[0])
-            # COLUMNS = [i[0] for i in cursor.description]  # for all Columns name
             data = cursor.fetchall()
-
-            for dd in data:
-                oo = list()
-                for index, i in enumerate(list(dict(dd).values())):
-                    if cursor.description[index][0] in haveprint:
-                        oo.append(i)
-                output.append(oo)
+            # COLUMNS = [i[0] for i in cursor.description]  # for all Columns name
             # output = [list(dict(i).values()) for i in data]
+            output, COLUMNS = output_Colums(cursor, data)
         conn.close()
         # COLUMNS.remove('PNPDeviceID')
     return output, COLUMNS

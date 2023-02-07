@@ -269,6 +269,9 @@ def search_data_row(request):
         searchPN = request.GET['searchPN']
         dateValueStr = request.GET['dateValueStr']
         print("dateValueStr: %s" % dateValueStr)
+        global show_field
+        fieldstr = request.GET['show_field']
+        show_field = fieldstr.split(",")
         output, COLUMNS = get_all_data_by_PN_and_date(searchPN, dateValueStr)
 
         return JsonResponse(data={"COLUMNS": COLUMNS, "output": output}, safe=False)

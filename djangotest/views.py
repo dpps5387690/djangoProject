@@ -65,15 +65,11 @@ def LineCallback(request):
                 output, COLUMNS = get_all_data_by_PN_and_date(searchPN, dateValueStr)
                 # Message = list()
                 if len(output) != 0:
-
-                    haveprint = ["ID", "WaferSN", "ChipSN", "Date Created", "Erase BB",
-                                 "Write Busy Time", "BB Plane", "Yield Rate", "Error Code"]
                     strline = ""
                     # strline = notprint + "\n"
                     for liststr in output:
 
                         for index, str in enumerate(liststr):
-                            if COLUMNS[index] in haveprint:
                                 strline += "%s\t" % str
                         strline += "\n"
                     Message = TextSendMessage(text=strline)

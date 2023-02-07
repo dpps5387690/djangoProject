@@ -14,15 +14,19 @@ const tx_searchPN = document.getElementById('tx_searchPN');
 const fieldSelectBox = $('#TableSlectBox').SumoSelect(
         {
             placeholder: 'Select Here',
-            csvDispCount: 50,
+            csvDispCount: 3,
             captionFormat: '{0} Selected',
-            selectAll: true,
-            captionFormatAllSelected: '{0} all selected!',
-            okCancelInMulti: true,
-            locale: ['OK', 'Cancel', 'Select All'],
+            // selectAll: true,
+            // captionFormatAllSelected: '{0} all selected!',
+            locale: ['OK', 'Cancel', 'Select All', 'Unselect All'],//, 'Select All'
             search: true,
             searchText: 'Enter here.',
+            clearAll: true,
+            // okCancelInMulti: true,
+            forceCustomRendering: true,
+            selectAll: 1
         });
+
 $(document).ready(function () {
     GetCategory_DataTable();
     datatablename_change();

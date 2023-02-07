@@ -91,6 +91,7 @@ function search_table_by_value(e) {
     var searchPN = $(tx_searchPN).val(); //获取选中的项
     var hide_index = 0;
     var dateValueStr = $(tx_daterange).val();
+    var show_field = fieldSelectBox.sumo.getSelStr();
     // var val = this.value;
     // alert("searchPN: " + searchPN)
     console.log("searchPN: " + searchPN);
@@ -99,7 +100,7 @@ function search_table_by_value(e) {
     // 选择id=db_link的元素时触发该ajax请求，调用/comparison/get_table接口
     $.ajax({
         url: '/search_data_row/',
-        data: {"searchPN": searchPN, "dateValueStr": dateValueStr},
+        data: {"searchPN": searchPN, "dateValueStr": dateValueStr, "show_field": show_field},
         type: 'GET',
         dataType: 'json',
         success: function (data) {

@@ -11,9 +11,20 @@ const lb_Status = document.getElementById('lb_Status');
 const tx_daterange = document.getElementById('tx_daterange');
 
 const tx_searchPN = document.getElementById('tx_searchPN');
-
+const fieldSelectBox = $('#TableSlectBox').SumoSelect(
+        {
+            placeholder: 'Select Here',
+            csvDispCount: 50,
+            captionFormat: '{0} Selected',
+            selectAll: true,
+            captionFormatAllSelected: '{0} all selected!',
+            okCancelInMulti: true,
+            locale: ['OK', 'Cancel', 'Select All'],
+            search: true,
+            searchText: 'Enter here.',
+        });
 $(document).ready(function () {
-
+    GetCategory_DataTable();
     datatablename_change();
     $('#bt_upload').on('click', uploadMultiFiles);
     $('#tx_searchPN').on('input', updateValue);
@@ -23,26 +34,14 @@ $(document).ready(function () {
     $("#datatablename").on('change', datatablename_change);
 
 
-    $('#TableSlectBox').SumoSelect(
-        {
-            placeholder: 'Select Here',
-            csvDispCount: 3,
-            captionFormat: '{0} Selected',
-            selectAll: true,
-            captionFormatAllSelected: '{0} all selected!',
-            okCancelInMulti: true,
-            locale: ['OK', 'Cancel', 'Select All'],
-            search: true,
-            searchText: 'Enter here.',
-        });
-    GetCategory_DataTable();
+
 });
 
 function GetCategory_DataTable() {
     var option_list = $("#TableSlectBox");
     option_list.empty();
-    var haveprint = ["ID", "WaferSN", "ChipSN", "Date Created", "Erase BB",
-        "Write Busy Time", "BB Plane", "Yield Rate", "Error Code"]
+    var haveprint = ["ID", "HostPort", "Site", "Disk", "WaferSN", "ChipSN", "Date Created", "Erase BB",
+                     "Write Busy Time", "BB Plane", "Yield Rate", "Error Code"]
     $.ajax({
         url: '/get_temp_columns/',
         data: {},
@@ -63,19 +62,8 @@ function GetCategory_DataTable() {
                 }
             });
 
-            $("#TableSlectBox")[0].sumo.reload({placeholder: 'first'});
-            $('#TableSlectBox').SumoSelect(
-                {
-                    placeholder: 'Select Here',
-                    csvDispCount: 3,
-                    captionFormat: '{0} Selected',
-                    selectAll: true,
-                    captionFormatAllSelected: '{0} all selected!',
-                    okCancelInMulti: true,
-                    locale: ['OK', 'Cancel', 'Select All'],
-                    search: true,
-                    searchText: 'Enter here.',
-                });
+            fieldSelectBox.sumo.reload();
+
         }
     });
 };
@@ -180,6 +168,7 @@ function datatablename_change() {
     options = $("#datatablename option:selected"); //获取选中的项
     var db_Table = options.val(); //获取选中的值
     var hide_index = 0;
+    var show_field = fieldSelectBox.sumo.getSelStr();
     // alert("ok");
     // alert(db_Name + " " + db_Table);
     console.log("db_Name: " + db_Name + " db_Table: " + db_Table)
@@ -189,7 +178,7 @@ function datatablename_change() {
     // 选择id=db_link的元素时触发该ajax请求，调用/comparison/get_table接口
     $.ajax({
         url: '/get_table_data/',
-        data: {"db_Name": db_Name, "db_Table": db_Table},
+        data: {"db_Name": db_Name, "db_Table": db_Table, "show_field": show_field},
         type: 'GET',
         dataType: 'json',
         success: function (data) {

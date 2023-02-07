@@ -70,7 +70,7 @@ def LineCallback(request):
                     for liststr in output:
 
                         for index, str in enumerate(liststr):
-                                strline += "%s\t" % str
+                            strline += "%s\t" % str
                         strline += "\n"
                     Message = TextSendMessage(text=strline)
                     line_bot_api.reply_message(  # 回復傳入的訊息文字
@@ -93,25 +93,35 @@ def hello_view(request):
         'data': "Hello Django ",
     })
 
+
+show_field = None
+
+
 def output_Colums(cursor, data):
     output = list()
     COLUMNS = list()
-    haveprint = ["ID", "WaferSN", "ChipSN", "Date Created", "Erase BB",
-                 "Write Busy Time", "BB Plane", "Yield Rate", "Error Code"]
+    fieldList = list()
+    if show_field is None or show_field[0] == "":
+        fieldList = ["ID", "HostPort", "Site", "Disk", "WaferSN", "ChipSN", "Date Created", "Erase BB",
+                     "Write Busy Time", "BB Plane", "Yield Rate", "Error Code"]
+    else:
+        fieldList = show_field
 
     for i in cursor.description:
-        if i[0] in haveprint:
+        if i[0] in fieldList:
             COLUMNS.append(i[0])
     # COLUMNS = [i[0] for i in cursor.description]  # for all Columns name
 
     for dd in data:
         oo = list()
         for index, i in enumerate(list(dict(dd).values())):
-            if cursor.description[index][0] in haveprint:
+            if cursor.description[index][0] in fieldList:
                 oo.append(i)
         output.append(oo)
     # output = [list(dict(i).values()) for i in data]
     return output, COLUMNS
+
+
 # 資料讀取
 def getdata(DBName, TableName):
     conn = pymysql.connect(host=mysqlhost, port=mysqlport, user=mysqluser, passwd=mysqlpw,
@@ -191,6 +201,9 @@ def get_table_data(request):
     if request.method == "GET":
         nowdatabasename = request.GET['db_Name']
         table = request.GET['db_Table']
+        global show_field
+        fieldstr = request.GET['show_field']
+        show_field = fieldstr.split(",")
         output, COLUMNS = getdata(nowdatabasename, table)
         return JsonResponse(data={"COLUMNS": COLUMNS, "output": output}, safe=False)
 
@@ -270,6 +283,7 @@ def multi_Files_Upload(request):
         files = request.FILES.getlist('files[]', None)
         print(files)
         return JsonResponse({'msg': '<div class="alert alert-success" role="alert">File successfully uploaded</div>'})
+
 
 def get_temp_columns(request):
     conn = pymysql.connect(host=mysqlhost, port=mysqlport, user=mysqluser, passwd=mysqlpw,

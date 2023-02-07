@@ -28,5 +28,6 @@ urlpatterns = [
     url(r'^search_data_row/$', views.search_data_row, name='search_data_row'),
     url(r'^get_now_Status/$', views.get_now_Status, name='get_now_Status'),
     url(r'^multi_Files_Upload/$', views.multi_Files_Upload, name='multi_Files_Upload'),
+    url(r'^get_temp_columns/$', views.get_temp_columns, name='get_temp_columns'),
     url(r'^LineCallback/$', views.LineCallback, name='LineCallback'),
 ]

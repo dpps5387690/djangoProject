@@ -6,12 +6,14 @@ $("#tx_daterange").daterangepicker({
         separator: " "
     }
 });
+const sel_TableSlectBox = document.getElementById('TableSlectBox');
 const lb_Status = document.getElementById('lb_Status');
 const tx_daterange = document.getElementById('tx_daterange');
 
 const tx_searchPN = document.getElementById('tx_searchPN');
 
 $(document).ready(function () {
+
     datatablename_change();
     $('#bt_upload').on('click', uploadMultiFiles);
     $('#tx_searchPN').on('input', updateValue);
@@ -19,7 +21,64 @@ $(document).ready(function () {
     $('#databasename').on('change', databasename_change);
 
     $("#datatablename").on('change', datatablename_change);
+
+
+    $('#TableSlectBox').SumoSelect(
+        {
+            placeholder: 'Select Here',
+            csvDispCount: 3,
+            captionFormat: '{0} Selected',
+            selectAll: true,
+            captionFormatAllSelected: '{0} all selected!',
+            okCancelInMulti: true,
+            locale: ['OK', 'Cancel', 'Select All'],
+            search: true,
+            searchText: 'Enter here.',
+        });
+    GetCategory_DataTable();
 });
+
+function GetCategory_DataTable() {
+    var option_list = $("#TableSlectBox");
+    option_list.empty();
+    var haveprint = ["ID", "WaferSN", "ChipSN", "Date Created", "Erase BB",
+        "Write Busy Time", "BB Plane", "Yield Rate", "Error Code"]
+    $.ajax({
+        url: '/get_temp_columns/',
+        data: {},
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            $.each(data['COLUMNS'], function (i, item) {
+                if ( haveprint.find(e => e == item)) {
+                    $("<option selected></option>")
+                        .val(item)
+                        .text(item)
+                        .appendTo(option_list)
+                } else {
+                    $("<option></option>")
+                        .val(item)
+                        .text(item)
+                        .appendTo(option_list)
+                }
+            });
+
+            $("#TableSlectBox")[0].sumo.reload({placeholder: 'first'});
+            $('#TableSlectBox').SumoSelect(
+                {
+                    placeholder: 'Select Here',
+                    csvDispCount: 3,
+                    captionFormat: '{0} Selected',
+                    selectAll: true,
+                    captionFormatAllSelected: '{0} all selected!',
+                    okCancelInMulti: true,
+                    locale: ['OK', 'Cancel', 'Select All'],
+                    search: true,
+                    searchText: 'Enter here.',
+                });
+        }
+    });
+};
 
 function updateValue(e) {
     // alert("key: " + e.key)

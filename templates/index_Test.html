@@ -4,10 +4,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.sumoselect/3.1.6/sumoselect.min.css">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sumoselect/3.1.6/jquery.sumoselect.min.js"></script>
+
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
 
     <meta charset="UTF-8">
@@ -15,14 +22,22 @@
 </head>
 <body>
 {% block content %}
-{#    <fieldset name="Multiple Files Upload">#}
-{#        <div id="msg"></div>#}
-{#        <p>#}
-{#            {% csrf_token %}#}
-{#            <input type="file" id="multiFiles" name="file[]" multiple="multiple"/>#}
-{#            <button id="bt_upload" class="btn btn-primary">Upload</button>#}
-{#        </p>#}
-{#    </fieldset>#}
+    {#    <fieldset name="Multiple Files Upload">#}
+    {#        <div id="msg"></div>#}
+    {#        <p>#}
+    {#            {% csrf_token %}#}
+    {#            <input type="file" id="multiFiles" name="file[]" multiple="multiple"/>#}
+    {#            <button id="bt_upload" class="btn btn-primary">Upload</button>#}
+    {#        </p>#}
+    {#    </fieldset>#}
+
+    <label>Select Table Filed</label><BR>
+    <select multiple="multiple" class="TableSlectBox" id="TableSlectBox" style="width: 160px">
+        <option value="1">no field</option>
+    </select><BR><BR>
+
+
+
     <label>Select DB and Table</label><BR>
     <select class="form-control" name="DBName" id="databasename" required="required">
         {% for c in alldatabase %}
@@ -48,30 +63,30 @@
 
     <table border="1px" width="100%" style="border-collapse: collapse;" name="TableShow" id="TableShow"
            required="required">
-    <tr>
-        {% for COLUMN in COLUMNS %}
-            <th>{{ COLUMN }}</th>
-        {% endfor %}
-    </tr>
-
-    {% for row in output %}
         <tr>
-            {% for value in row %}
-                <td align="center">
-                    {#            {% if forloop.counter == 2 %}#}
-                    {#             <a class="stored-uploadTest {{ file.type }}" href="uploadTest?filename={{ value }}&type=desktop&mode=view"">#}
-                    {#                {{ value }}#}
-                    {#             </a>#}
-                    {#             {% else %}#}
-                    {#                {{ value }}#}
-                    {#            {% endif %}#}
-                    {{ value }}
-                </td>
+            {% for COLUMN in COLUMNS %}
+                <th>{{ COLUMN }}</th>
             {% endfor %}
         </tr>
-    {% endfor %}
 
-</table>
+        {% for row in output %}
+            <tr>
+                {% for value in row %}
+                    <td align="center">
+                        {#            {% if forloop.counter == 2 %}#}
+                        {#             <a class="stored-uploadTest {{ file.type }}" href="uploadTest?filename={{ value }}&type=desktop&mode=view"">#}
+                        {#                {{ value }}#}
+                        {#             </a>#}
+                        {#             {% else %}#}
+                        {#                {{ value }}#}
+                        {#            {% endif %}#}
+                        {{ value }}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+
+    </table>
 {% endblock %}
 <script src="{% static 'base/js/index_Test.js' %}"></script>
 {#</body>#}

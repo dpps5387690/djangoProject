@@ -203,12 +203,13 @@ def search_WaferSN_ChipSN(DBName, TableName, waferSN, chipSN):
                     COLUMNS.append(i[0])
             # COLUMNS = [i[0] for i in cursor.description]  # for all Columns name
             data = cursor.fetchall()
-            oo = list()
-            for index, i in enumerate(list(dict(data[0]).values())):
-                if cursor.description[index][0] in haveprint:
-                    oo.append(i)
 
-            output.append(oo)
+            for dd in data:
+                oo = list()
+                for index, i in enumerate(list(dict(dd).values())):
+                    if cursor.description[index][0] in haveprint:
+                        oo.append(i)
+                output.append(oo)
             # output = [list(dict(i).values()) for i in data]
         conn.close()
         # COLUMNS.remove('PNPDeviceID')
@@ -221,7 +222,7 @@ def get_database_by_DateRange(DateRange):
     with conn.cursor() as cursor:
         DateList = DateRange.split()
         commandstr = "SELECT table_schema,create_time FROM information_schema.tables  WHERE table_schema LIKE '%%sorting_%%' " \
-                     "AND create_time > DATE('%s') AND create_time <= DATE('%s') GROUP BY TABLE_SCHEMA" % (
+                     "AND create_time > DATE('%s') AND create_time < DATE('%s') GROUP BY TABLE_SCHEMA" % (
                          DateList[0], DateList[1])
         count = cursor.execute(commandstr)
         print("alldatabase: %d" % count)
@@ -266,3 +267,15 @@ def multi_Files_Upload(request):
         files = request.FILES.getlist('files[]', None)
         print(files)
         return JsonResponse({'msg': '<div class="alert alert-success" role="alert">File successfully uploaded</div>'})
+
+def get_temp_columns(request):
+    conn = pymysql.connect(host=mysqlhost, port=mysqlport, user=mysqluser, passwd=mysqlpw,
+                           db='sorting', charset='utf8', cursorclass=pymysql.cursors.DictCursor)
+
+    COLUMNS = list()
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT * FROM %s" % 'sortingreporttemp')
+        COLUMNS = [i[0] for i in cursor.description]  # for all Columns name
+        conn.close()
+        # COLUMNS.remove('PNPDeviceID')
+    return JsonResponse(data={"COLUMNS": COLUMNS}, safe=False)
